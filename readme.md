@@ -37,7 +37,7 @@ A função aceita um objeto `settings` com as seguintes propriedades:
 
 ### Exemplo de Uso
 
-```javascript
+~~~javascript
 autocompleteEmpresas({
     empresaField: "#nomeEmpresaSolicitante",
     codEmpVariavel: "#codEmpresaSolicitante",
@@ -52,8 +52,10 @@ autocompleteEmpresas({
         console.log("Empresa removida!");
     }
 });
+~~~
 
-## 2. Função: `autocompleteSetores`
+
+### Função: `autocompleteSetores`
 
 ### Descrição
 A função `autocompleteSetores` habilita o autocomplete de setores com base na empresa selecionada. Ela permite buscar setores por código de solicitante e associá-los ao campo de setor.
