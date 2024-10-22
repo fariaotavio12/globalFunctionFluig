@@ -2,19 +2,19 @@ var acEmpresas = null;
 var acSetores = null;
 var _mobile = false;
 
-var setMobile = function (mobile) {
+const setMobile = (mobile) => {
     _mobile = mobile;
 }
 
-var setMessage = function (type, message) {
+const setMessage = (type, message) => {
     FLUIGC.toast({
         type: type,
         message: message,
         timeout: 10000,
     });
-};
+}
 
-function autocompleteEmpresas(settings) {
+const autocompleteEmpresas = (settings) => {
     // Configurações padrão que podem ser sobrescritas
     var config = $.extend({
         empresaField: "#nomeEmpresaSolicitante",  // Campo de input de autocomplete
@@ -25,20 +25,34 @@ function autocompleteEmpresas(settings) {
         maxTags: 1,  // Limite de tags
         urlBase: "/api/public/2.0/groups/findGroupsByUser/",  // URL base para a API
         codigoSolicitante: "#codSolicitante",  // ID do solicitante
+        fluxoAlcada: null,
         readOnly: false,  // Define se o campo será readonly
         addConfigSelectEmpresa: function () { },  // Callback adicional ao selecionar empresa
         addConfigRemoveEmpresa: function () { },  // Callback adicional ao remover empresa
         selectEmpresa: function (event) {  // Função padrão ao adicionar item
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
-            autocompleteSetores();
+            if(fluxoAlcada == null){
+                autocompleteSetores();
+            }else{
+                autocompleteSetores({fluxoAlcada: config.fluxoAlcada});
+            }
+           
+
             config.addConfigSelectEmpresa();
+            const setor = $(config.setorField).val()
+            if (config.fluxoAlcada != null && setor != null) {
+                consultaAprovadores(filial, setor, config.fluxoAlcada)
+            }
         },
         removeEmpresa: function (event) {  // Função padrão ao remover item
             $(config.codEmpVariavel).val("");
             $(config.codSetorField).val("");
             $(config.setorField).val("");
             config.addConfigRemoveEmpresa();
+            if (config.fluxoAlcada != null) {
+                limpaAlçadas()
+            }
         }
     }, settings);
 
@@ -87,24 +101,33 @@ function autocompleteEmpresas(settings) {
     return acEmpresas
 }
 
-function autocompleteSetores(settings) {
-   
-    
+const autocompleteSetores = (settings) => {
+
+
     // Configurações padrão que podem ser sobrescritas
     var config = $.extend({
         codSetorField: "#codSetorSolicitante",    // Campo para armazenar o código do setor
         setorField: "#nomeSetorSolicitante",      // Campo do nome do setor
         codigoSolicitante: "#codSolicitante",         // ID do campo solicitante
         maxTags: 1,  // Limite de tags
+        fluxoAlcada: null,
         onItemAdded: function (event) {
-            $(config.codSetorField).val(event.item.COD_PROTHEUS);
+            var setor = event.item.COD_PROTHEUS;
+            var filial = $(config.setorField).val();
+            $(config.codSetorField).val(setor);
+            if (config.fluxoAlcada != null) {
+                consultaAprovadores(filial, setor , config.fluxoAlcada);
+            } 
         },
         onItemRemoved: function () {
             $(config.codSetorField).val("");
+            if (config.fluxoAlcada != null) {
+                limpaAlçadas();
+            }
         }
     }, settings);
-  
-    
+
+
 
     // Definir campo como editável ou readonly conforme a configuração
     $(config.setorField).prop("readonly", false);
@@ -147,7 +170,7 @@ function autocompleteSetores(settings) {
             });
     };
     console.log($(config.codigoSolicitante).val());
-    
+
     // Busca os setores usando o código do solicitante
     getSetores($(config.codigoSolicitante).val()).then((setores) => {
         if (setores.length > 1) {
@@ -183,3 +206,87 @@ function autocompleteSetores(settings) {
     });
 }
 
+const consultaAprovadores = async (setor, filial, fluxo) => {
+    if(fluxo == null){
+        return
+    }
+    //Monta as constraints para consulta
+    var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
+    var c2 = DatasetFactory.createConstraint("FLUXO", fluxo, fluxo, ConstraintType.MUST_NOT);
+    var c3 = DatasetFactory.createConstraint("FILIAL", filial, filial, ConstraintType.SHOULD);
+    var constraints = new Array(c1, c2, c3);
+    var dataset = await DatasetFactory.getDataset("protheus_rest_zcc", null, constraints, null);
+    console.log(dataset.values);
+    if (dataset.values.length > 0) {
+        // console.log(dataset.values[0]);
+        setWorkflowValues(dataset.values[0]);
+        document.getElementById("erroReq").checked = false;
+    } else {
+        document.getElementById("erroReq").checked = true;
+    }
+};
+
+const setWorkflowValues = (responseOne) => {
+    console.log(responseOne);
+    document.getElementById("codUserAlcadaN1").value = responseOne.codUserAlcadaN1;
+    document.getElementById("codUserAlcadaN2").value = responseOne.codUserAlcadaN2;
+    document.getElementById("codUserAlcadaN3").value = responseOne.codUserAlcadaN3;
+    document.getElementById("codUserAlcadaN4").value = responseOne.codUserAlcadaN4;
+    document.getElementById("codUserAlcadaN5").value = responseOne.codUserAlcadaN5;
+    document.getElementById("codUserAlcadaN6").value = responseOne.codUserAlcadaN6;
+
+    document.getElementById("nameUserAlcadaN1").value = responseOne.nameUserAlcadaN1;
+    document.getElementById("nameUserAlcadaN2").value = responseOne.nameUserAlcadaN2;
+    document.getElementById("nameUserAlcadaN3").value = responseOne.nameUserAlcadaN3;
+    document.getElementById("nameUserAlcadaN4").value = responseOne.nameUserAlcadaN4;
+    document.getElementById("nameUserAlcadaN5").value = responseOne.nameUserAlcadaN5;
+    document.getElementById("nameUserAlcadaN6").value = responseOne.nameUserAlcadaN6;
+
+    document.getElementById("valorAlcadaN1").value = responseOne.valorAlcadaN1;
+    document.getElementById("valorAlcadaN2").value = responseOne.valorAlcadaN2;
+    document.getElementById("valorAlcadaN3").value = responseOne.valorAlcadaN3;
+    document.getElementById("valorAlcadaN4").value = responseOne.valorAlcadaN4;
+    document.getElementById("valorAlcadaN5").value = responseOne.valorAlcadaN5;
+    document.getElementById("valorAlcadaN6").value = responseOne.valorAlcadaN6;
+
+    document.getElementById("usaValor").checked = responseOne.usaValor;
+
+    document.getElementById("temN1").checked = responseOne.temN1;
+    document.getElementById("temN2").checked = responseOne.temN2;
+    document.getElementById("temN3").checked = responseOne.temN3;
+    document.getElementById("temN4").checked = responseOne.temN4;
+    document.getElementById("temN5").checked = responseOne.temN5;
+    document.getElementById("temN6").checked = responseOne.temN6;
+};
+
+const limpaAlçadas = () => {
+    document.getElementById("codUserAlcadaN1").value = "";
+    document.getElementById("codUserAlcadaN2").value = "";
+    document.getElementById("codUserAlcadaN3").value = "";
+    document.getElementById("codUserAlcadaN4").value = "";
+    document.getElementById("codUserAlcadaN5").value = "";
+    document.getElementById("codUserAlcadaN6").value = "";
+
+    document.getElementById("temN1").checked = false;
+    document.getElementById("temN2").checked = false;
+    document.getElementById("temN3").checked = false;
+    document.getElementById("temN4").checked = false;
+    document.getElementById("temN5").checked = false;
+    document.getElementById("temN6").checked = false;
+
+    document.getElementById("nameUserAlcadaN1").value = "";
+    document.getElementById("nameUserAlcadaN2").value = "";
+    document.getElementById("nameUserAlcadaN3").value = "";
+    document.getElementById("nameUserAlcadaN4").value = "";
+    document.getElementById("nameUserAlcadaN5").value = "";
+    document.getElementById("nameUserAlcadaN6").value = "";
+
+    document.getElementById("valorAlcadaN1").value = "";
+    document.getElementById("valorAlcadaN2").value = "";
+    document.getElementById("valorAlcadaN3").value = "";
+    document.getElementById("valorAlcadaN4").value = "";
+    document.getElementById("valorAlcadaN5").value = "";
+    document.getElementById("valorAlcadaN6").value = "";
+
+    document.getElementById("usaValor").checked = false;
+};
