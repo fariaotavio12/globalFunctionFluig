@@ -1,3 +1,19 @@
+var acEmpresas = null;
+var acSetores = null;
+var _mobile = false;
+
+var setMobile = function(mobile) {
+	_mobile = mobile;
+  }
+
+  var setMessage = function (type, message) {
+    FLUIGC.toast({
+      type: type,
+      message: message,
+      timeout: 10000,
+    });
+  };
+
 function autocompleteEmpresas(settings) {
     // Configurações padrão que podem ser sobrescritas
     var config = $.extend({
@@ -30,7 +46,7 @@ function autocompleteEmpresas(settings) {
     $(config.empresaField).prop("readonly", config.readOnly);
 
     // Configuração do autocomplete
-    var acEmpresas = FLUIGC.autocomplete(config.empresaField, {
+    acEmpresas = FLUIGC.autocomplete(config.empresaField, {
         highlight: true,
         minLength: 0,
         hint: true,
@@ -72,6 +88,8 @@ function autocompleteEmpresas(settings) {
         .on("fluig.autocomplete.itemRemoved", function (event) {
             config.removeEmpresa(event);
         });
+
+    return acEmpresas
 }
 
 function autocompleteSetores(settings) {
@@ -115,17 +133,17 @@ function autocompleteSetores(settings) {
             .then((data) => {
                 if (data && data.content.length > 0) {
                     if (data.content[0].ERROR) {
-                        jsUtil.setMessage("warning", "Não foi possível encontrar um setor.");
+                        setMessage("warning", "Não foi possível encontrar um setor.");
                         return [];
                     }
                     return data.content;
                 } else {
-                    jsUtil.setMessage("warning", "Não foi possível encontrar um setor.");
+                    setMessage("warning", "Não foi possível encontrar um setor.");
                     return [];
                 }
             })
             .catch((jqXHR, textStatus) => {
-                jsUtil.setMessage("warning", `Erro ao buscar setores: ${textStatus}`);
+                setMessage("warning", `Erro ao buscar setores: ${textStatus}`);
                 return [];
             });
     };
@@ -170,3 +188,4 @@ function autocompleteSetores(settings) {
         }
     });
 }
+
