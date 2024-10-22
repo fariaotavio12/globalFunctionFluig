@@ -8,14 +8,14 @@ function autocompleteEmpresas(settings) {
         mensagemErro: "A empresa já está selecionada!",  // Mensagem de erro padrão
         maxTags: 1,  // Limite de tags
         urlBase: "/api/public/2.0/groups/findGroupsByUser/",  // URL base para a API
-        solicitanteId: "#codSolicitante",  // ID do solicitante
+        codigoSolicitante: "#codSolicitante",  // ID do solicitante
         readOnly: false,  // Define se o campo será readonly
-        addConfigSelectEmpresa: function () {},  // Callback adicional ao selecionar empresa
-        addConfigRemoveEmpresa: function () {},  // Callback adicional ao remover empresa
+        addConfigSelectEmpresa: function () { },  // Callback adicional ao selecionar empresa
+        addConfigRemoveEmpresa: function () { },  // Callback adicional ao remover empresa
         selectEmpresa: function (event) {  // Função padrão ao adicionar item
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
-            autocompleteSetores({ codigoSolicitante: filial });
+            autocompleteSetores({ codigoSolicitante: config.codigoSolicitante });
             config.addConfigSelectEmpresa();
         },
         removeEmpresa: function (event) {  // Função padrão ao remover item
@@ -56,7 +56,7 @@ function autocompleteEmpresas(settings) {
         },
         displayKey: "description",
         source: {
-            url: config.urlBase + $(config.solicitanteId).val() + "?pattern=0&",
+            url: config.urlBase + $(config.codigoSolicitante).val() + "?pattern=0&",
             limit: 10,
             offset: 0,
             formatData: function (data) {
@@ -66,12 +66,12 @@ function autocompleteEmpresas(settings) {
             },
         },
     })
-    .on("fluig.autocomplete.itemAdded", function (event) {
-        config.selectEmpresa(event);
-    })
-    .on("fluig.autocomplete.itemRemoved", function (event) {
-        config.removeEmpresa(event);
-    });
+        .on("fluig.autocomplete.itemAdded", function (event) {
+            config.selectEmpresa(event);
+        })
+        .on("fluig.autocomplete.itemRemoved", function (event) {
+            config.removeEmpresa(event);
+        });
 }
 
 function autocompleteSetores(settings) {
@@ -79,7 +79,7 @@ function autocompleteSetores(settings) {
     var config = $.extend({
         codSetorField: "#codSetorSolicitante",    // Campo para armazenar o código do setor
         setorField: "#nomeSetorSolicitante",      // Campo do nome do setor
-        codigoSolicitante: "#_COD_SOLIC",         // ID do campo solicitante
+        codigoSolicitante: "#codSolicitante",         // ID do campo solicitante
         maxTags: 1,  // Limite de tags
         onItemAdded: function (event) {
             $(config.codSetorField).val(event.item.COD_PROTHEUS);
@@ -168,80 +168,5 @@ function autocompleteSetores(settings) {
             $(config.codSetorField).val(setores[0].COD_PROTHEUS);
             $(config.setorField).val(setores[0].SETOR_PROTHEUS);
         }
-function autocompleteEmpresas(settings) {
-    // Configurações padrão que podem ser sobrescritas
-    var config = $.extend({
-        empresaField: "#nomeEmpresaSolicitante",  // Campo de input de autocomplete
-        codEmpVariavel: "#codEmpresaSolicitante", // Campo que armazena o código da empresa
-        codSetorField: "#codSetorSolicitante",    // Campo para armazenar o código do setor
-        setorField: "#nomeSetorSolicitante",      // Campo do nome do setor
-        mensagemErro: "A empresa já está selecionada!",  // Mensagem de erro padrão
-        maxTags: 1,  // Limite de tags
-        urlBase: "/api/public/2.0/groups/findGroupsByUser/",  // URL base para a API
-        solicitanteId: "#codSolicitante",  // ID do solicitante
-        readOnly: false,  // Define se o campo será readonly
-        addConfigSelectEmpresa: function () {},  // Callback adicional ao selecionar empresa
-        addConfigRemoveEmpresa: function () {},  // Callback adicional ao remover empresa
-        selectEmpresa: function (event) {  // Função padrão ao adicionar item
-            var filial = event.item.code.split("_")[0];
-            $(config.codEmpVariavel).val(filial);
-            autocompleteSetores({ codigoSolicitante: filial });
-            config.addConfigSelectEmpresa();
-        },
-        removeEmpresa: function (event) {  // Função padrão ao remover item
-            $(config.codEmpVariavel).val("");
-            $(config.codSetorField).val("");
-            $(config.setorField).val("");
-            config.addConfigRemoveEmpresa();
-        }
-    }, settings);
-
-    // Definir campo como editável ou readonly conforme a configuração
-    $(config.empresaField).prop("readonly", config.readOnly);
-
-    // Configuração do autocomplete
-    var acEmpresas = FLUIGC.autocomplete(config.empresaField, {
-        highlight: true,
-        minLength: 0,
-        hint: true,
-        searchTimeout: 100,
-        type: "tagAutocomplete",
-        name: "empresa",
-        tagClass: "tag-default",
-        maxTags: config.maxTags,
-        allowDuplicates: false,
-        onTagExists: function (item, tag) {
-            // Exibe a mensagem de erro definida no JSON
-            FLUIGC.toast({
-                message: config.mensagemErro,
-                type: "warning",
-            });
-            $(tag).hide().fadeIn();
-        },
-        onMaxTags: function () {
-            FLUIGC.toast({
-                message: "Você atingiu o limite de empresas!",
-                type: "warning",
-            });
-        },
-        displayKey: "description",
-        source: {
-            url: config.urlBase + $(config.solicitanteId).val() + "?pattern=0&",
-            limit: 10,
-            offset: 0,
-            formatData: function (data) {
-                return data.content.filter(function (group) {
-                    return !group.isInternal;
-                });
-            },
-        },
-    })
-    .on("fluig.autocomplete.itemAdded", function (event) {
-        config.selectEmpresa(event);
-    })
-    .on("fluig.autocomplete.itemRemoved", function (event) {
-        config.removeEmpresa(event);
-    });
-}
     });
 }
