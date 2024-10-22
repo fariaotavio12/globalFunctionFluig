@@ -146,7 +146,8 @@ function autocompleteSetores(settings) {
                 return [];
             });
     };
-
+    console.log($(config.codigoSolicitante).val());
+    
     // Busca os setores usando o código do solicitante
     getSetores($(config.codigoSolicitante).val()).then((setores) => {
         if (setores.length > 1) {
