@@ -34,7 +34,7 @@ const autocompleteEmpresas = (settings) => {
             $(config.codEmpVariavel).val(filial);
             console.log(config.fluxoAlcada);
             
-            if (fluxoAlcada == null) {
+            if (config.fluxoAlcada == null) {
                 autocompleteSetores();
             } else {
                 autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
