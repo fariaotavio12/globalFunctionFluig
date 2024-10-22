@@ -32,13 +32,11 @@ const autocompleteEmpresas = (settings) => {
         selectEmpresa: function (event) {  // Função padrão ao adicionar item
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
-            if(fluxoAlcada == null){
+            if (fluxoAlcada == null) {
                 autocompleteSetores();
-            }else{
-                autocompleteSetores({fluxoAlcada: config.fluxoAlcada});
+            } else {
+                autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
             }
-           
-
             config.addConfigSelectEmpresa();
             const setor = $(config.setorField).val()
             if (config.fluxoAlcada != null && setor != null) {
@@ -116,8 +114,8 @@ const autocompleteSetores = (settings) => {
             var filial = $(config.setorField).val();
             $(config.codSetorField).val(setor);
             if (config.fluxoAlcada != null) {
-                consultaAprovadores(filial, setor , config.fluxoAlcada);
-            } 
+                consultaAprovadores(filial, setor, config.fluxoAlcada);
+            }
         },
         onItemRemoved: function () {
             $(config.codSetorField).val("");
@@ -207,9 +205,8 @@ const autocompleteSetores = (settings) => {
 }
 
 const consultaAprovadores = async (setor, filial, fluxo) => {
-    if(fluxo == null){
-        return
-    }
+    console.log("testando");
+    
     //Monta as constraints para consulta
     var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
     var c2 = DatasetFactory.createConstraint("FLUXO", fluxo, fluxo, ConstraintType.MUST_NOT);
