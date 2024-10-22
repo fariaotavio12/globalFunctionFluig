@@ -209,7 +209,7 @@ const autocompleteSetores = (settings) => {
 }
 
 const consultaAprovadores = async (setor, filial, fluxo) => {
-    console.log("testando", fluxo);
+    console.log("testando", setor, filial, fluxo);
     
     //Monta as constraints para consulta
     var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
