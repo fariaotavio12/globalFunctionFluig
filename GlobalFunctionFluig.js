@@ -37,12 +37,14 @@ const autocompleteEmpresas = (settings) => {
             if (config.fluxoAlcada == null) {
                 autocompleteSetores();
             } else {
+				console.log("aw");
                 autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
             }
             config.addConfigSelectEmpresa();
             const setor = $(config.codSetorField).val()
             
             if (config.fluxoAlcada != null && setor != null) {
+				limpaAlçadas();
                 consultaAprovadores(filial, setor, config.fluxoAlcada)
             }
         },
@@ -103,8 +105,6 @@ const autocompleteEmpresas = (settings) => {
 }
 
 const autocompleteSetores = (settings) => {
-
-
     // Configurações padrão que podem ser sobrescritas
     var config = $.extend({
         codSetorField: "#codSetorSolicitante",    // Campo para armazenar o código do setor
@@ -176,6 +176,8 @@ const autocompleteSetores = (settings) => {
     // Busca os setores usando o código do solicitante
     getSetores($(config.codigoSolicitante).val()).then((setores) => {
         if (setores.length > 1) {
+			if (acSetores != null || acSetores != undefined) acSetores.destroy();
+
             acSetores = FLUIGC.autocomplete(config.setorField, {
                 highlight: true,
                 minLength: 0,
@@ -208,20 +210,30 @@ const autocompleteSetores = (settings) => {
     });
 }
 
-const consultaAprovadores = async (setor, filial, fluxo) => {
-    console.log("testando", setor, filial, fluxo);
-    
-    //Monta as constraints para consulta
+const consultaAprovadores = async (filial, setor, fluxo) => {
+    console.log(setor, filial, fluxo);
+
+    // Certifica que os valores são strings
+    filial = filial.toString();
+    setor = setor.toString();
+    fluxo = fluxo.toString();
+
+    if (filial === null || setor === null || fluxo === null) {
+        return;
+    }
+
+    // Monta as constraints para consulta
     var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
     var c2 = DatasetFactory.createConstraint("FLUXO", fluxo, fluxo, ConstraintType.MUST_NOT);
     var c3 = DatasetFactory.createConstraint("FILIAL", filial, filial, ConstraintType.SHOULD);
-    var constraints = new Array(c1, c2, c3);
+    var constraints = [c1, c2, c3];
+
+    // Consulta o dataset
     var dataset = await DatasetFactory.getDataset("protheus_rest_zcc", null, constraints, null);
-    console.log(dataset.values);
-    if (dataset.values.length > 0) {
-        // console.log(dataset.values[0]);
+
+    // Verifica se há resultados no dataset
+    if (dataset && dataset.values && dataset.values.length > 0) {
         setWorkflowValues(dataset.values[0]);
-        console.log(dataset.values[0])
         document.getElementById("erroReq").checked = false;
     } else {
         document.getElementById("erroReq").checked = true;
