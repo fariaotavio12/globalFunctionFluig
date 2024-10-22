@@ -40,7 +40,8 @@ const autocompleteEmpresas = (settings) => {
                 autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
             }
             config.addConfigSelectEmpresa();
-            const setor = $(config.setorField).val()
+            const setor = $(config.codSetorField).val()
+            
             if (config.fluxoAlcada != null && setor != null) {
                 consultaAprovadores(filial, setor, config.fluxoAlcada)
             }
@@ -108,12 +109,13 @@ const autocompleteSetores = (settings) => {
     var config = $.extend({
         codSetorField: "#codSetorSolicitante",    // Campo para armazenar o código do setor
         setorField: "#nomeSetorSolicitante",      // Campo do nome do setor
+        codEmpVariavel: "#codEmpresaSolicitante",
         codigoSolicitante: "#codSolicitante",         // ID do campo solicitante
         maxTags: 1,  // Limite de tags
         fluxoAlcada: null,
         onItemAdded: function (event) {
             var setor = event.item.COD_PROTHEUS;
-            var filial = $(config.setorField).val();
+            var filial = $(config.codEmpVariavel).val();
             $(config.codSetorField).val(setor);
             if (config.fluxoAlcada != null) {
                 consultaAprovadores(filial, setor, config.fluxoAlcada);
@@ -207,7 +209,7 @@ const autocompleteSetores = (settings) => {
 }
 
 const consultaAprovadores = async (setor, filial, fluxo) => {
-    console.log("testando");
+    console.log("testando", fluxo);
     
     //Monta as constraints para consulta
     var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
