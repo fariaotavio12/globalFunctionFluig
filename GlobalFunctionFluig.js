@@ -163,7 +163,7 @@ function autocompleteSetores(settings) {
                     setMessage("warning", "O setor já está selecionado. Remova-o para adicionar outro.");
                 },
                 displayKey: "SETOR_PROTHEUS",
-                source: substringMatcher(setores, "SETOR_PROTHEUS"),
+                source: substringMatcher(setores),
             })
                 .on("fluig.autocomplete.itemAdded", function (event) {
                     config.onItemAdded(event);
