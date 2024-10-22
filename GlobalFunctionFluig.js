@@ -2,17 +2,17 @@ var acEmpresas = null;
 var acSetores = null;
 var _mobile = false;
 
-var setMobile = function(mobile) {
-	_mobile = mobile;
-  }
+var setMobile = function (mobile) {
+    _mobile = mobile;
+}
 
-  var setMessage = function (type, message) {
+var setMessage = function (type, message) {
     FLUIGC.toast({
-      type: type,
-      message: message,
-      timeout: 10000,
+        type: type,
+        message: message,
+        timeout: 10000,
     });
-  };
+};
 
 function autocompleteEmpresas(settings) {
     // Configurações padrão que podem ser sobrescritas
@@ -58,17 +58,12 @@ function autocompleteEmpresas(settings) {
         allowDuplicates: false,
         onTagExists: function (item, tag) {
             // Exibe a mensagem de erro definida no JSON
-            FLUIGC.toast({
-                message: config.mensagemErro,
-                type: "warning",
-            });
+            setMessage("warning", config.mensagemErro);
             $(tag).hide().fadeIn();
         },
         onMaxTags: function () {
-            FLUIGC.toast({
-                message: "Você atingiu o limite de empresas!",
-                type: "warning",
-            });
+            setMessage("warning", "Você atingiu o limite de empresas!");
+
         },
         displayKey: "description",
         source: {
@@ -162,16 +157,10 @@ function autocompleteSetores(settings) {
                 maxTags: config.maxTags,
                 allowDuplicates: false,
                 onTagExists: function () {
-                    FLUIGC.toast({
-                        message: "O setor já está selecionado. Remova-o para adicionar outro.",
-                        type: "warning",
-                    });
+                    setMessage("warning", "O setor já está selecionado. Remova-o para adicionar outro.");
                 },
                 onMaxTags: function () {
-                    FLUIGC.toast({
-                        message: "O setor já está selecionado. Remova-o para adicionar outro.",
-                        type: "warning",
-                    });
+                    setMessage("warning", "O setor já está selecionado. Remova-o para adicionar outro.");
                 },
                 displayKey: "SETOR_PROTHEUS",
                 source: substringMatcher(setores, "SETOR_PROTHEUS"),
