@@ -220,6 +220,7 @@ const consultaAprovadores = async (setor, filial, fluxo) => {
     if (dataset.values.length > 0) {
         // console.log(dataset.values[0]);
         setWorkflowValues(dataset.values[0]);
+        console.log(dataset.values[0])
         document.getElementById("erroReq").checked = false;
     } else {
         document.getElementById("erroReq").checked = true;
