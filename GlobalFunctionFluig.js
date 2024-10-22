@@ -32,7 +32,7 @@ const autocompleteEmpresas = (settings) => {
         selectEmpresa: function (event) {  // Função padrão ao adicionar item
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
-            console.log(fluxoAlcada);
+            console.log(config.fluxoAlcada);
             
             if (fluxoAlcada == null) {
                 autocompleteSetores();
