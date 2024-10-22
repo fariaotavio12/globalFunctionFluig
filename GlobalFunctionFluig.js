@@ -31,7 +31,7 @@ function autocompleteEmpresas(settings) {
         selectEmpresa: function (event) {  // Função padrão ao adicionar item
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
-            autocompleteSetores({ codigoSolicitante: config.codigoSolicitante });
+            autocompleteSetores();
             config.addConfigSelectEmpresa();
         },
         removeEmpresa: function (event) {  // Função padrão ao remover item
@@ -88,6 +88,8 @@ function autocompleteEmpresas(settings) {
 }
 
 function autocompleteSetores(settings) {
+   
+    
     // Configurações padrão que podem ser sobrescritas
     var config = $.extend({
         codSetorField: "#codSetorSolicitante",    // Campo para armazenar o código do setor
@@ -101,6 +103,8 @@ function autocompleteSetores(settings) {
             $(config.codSetorField).val("");
         }
     }, settings);
+  
+    
 
     // Definir campo como editável ou readonly conforme a configuração
     $(config.setorField).prop("readonly", false);
@@ -144,7 +148,7 @@ function autocompleteSetores(settings) {
     };
 
     // Busca os setores usando o código do solicitante
-    getSetores(config.codigoSolicitante).then((setores) => {
+    getSetores($(config.codigoSolicitante).val()).then((setores) => {
         if (setores.length > 1) {
             acSetores = FLUIGC.autocomplete(config.setorField, {
                 highlight: true,
