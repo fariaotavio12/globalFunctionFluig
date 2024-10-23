@@ -33,18 +33,18 @@ const autocompleteEmpresas = (settings) => {
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
             console.log(config.fluxoAlcada);
-            
+
             if (config.fluxoAlcada == null) {
                 autocompleteSetores();
             } else {
-				console.log("aw");
+                console.log("aw");
                 autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
             }
             config.addConfigSelectEmpresa();
             const setor = $(config.codSetorField).val()
-            
+
             if (config.fluxoAlcada != null && setor != null) {
-				limpaAlçadas();
+                limpaAlçadas();
                 consultaAprovadores(filial, setor, config.fluxoAlcada)
             }
         },
@@ -148,8 +148,7 @@ const autocompleteSetores = (settings) => {
         };
     }
 
-    // Função para buscar os setores do dataset
-    const getSetores = (codeUser) => {
+    const getSetores = (codeUser) => { // Função para buscar os setores do dataset
         return $.ajax({
             url: `/api/public/ecm/dataset/search?datasetId=dsSetoresUsuario&filterFields=user,${codeUser}`,
             type: 'GET',
@@ -176,7 +175,7 @@ const autocompleteSetores = (settings) => {
     // Busca os setores usando o código do solicitante
     getSetores($(config.codigoSolicitante).val()).then((setores) => {
         if (setores.length > 1) {
-			if (acSetores != null || acSetores != undefined) acSetores.destroy();
+            if (acSetores != null || acSetores != undefined) acSetores.destroy();
 
             acSetores = FLUIGC.autocomplete(config.setorField, {
                 highlight: true,
@@ -206,12 +205,14 @@ const autocompleteSetores = (settings) => {
         } else if (setores.length == 1) {
             $(config.codSetorField).val(setores[0].COD_PROTHEUS);
             $(config.setorField).val(setores[0].SETOR_PROTHEUS);
+            var filial = $(config.codEmpVariavel).val();
+            consultaAprovadores(filial, setores[0].COD_PROTHEUS, config.fluxoAlcada);
         }
     });
 }
 
 const consultaAprovadores = async (filial, setor, fluxo) => {
-    console.log(setor, filial, fluxo);
+    console.log(filial, setor, fluxo);
 
     // Certifica que os valores são strings
     filial = filial.toString();
