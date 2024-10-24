@@ -33,13 +33,8 @@ const autocompleteEmpresas = (settings) => {
             var filial = event.item.code.split("_")[0];
             $(config.codEmpVariavel).val(filial);
             console.log(config.fluxoAlcada);
+            autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
 
-            if (config.fluxoAlcada == null) {
-                autocompleteSetores();
-            } else {
-                console.log("aw");
-                autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
-            }
             config.addConfigSelectEmpresa();
             const setor = $(config.codSetorField).val()
 
@@ -211,6 +206,24 @@ const autocompleteSetores = (settings) => {
     });
 }
 
+// const consultaAprovadores = async (setor, filial) => {
+// 	var fluxo = "01";
+// 	//Monta as constraints para consulta
+// 	var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
+// 	var c2 = DatasetFactory.createConstraint("FLUXO", fluxo, fluxo, ConstraintType.MUST_NOT);
+// 	var c3 = DatasetFactory.createConstraint("FILIAL", filial, filial, ConstraintType.SHOULD);
+// 	var constraints = new Array(c1, c2, c3);
+// 	var dataset = await DatasetFactory.getDataset("protheus_rest_zcc", null, constraints, null);
+
+// 	if (dataset.values.length > 0) {
+// 		// console.log(dataset.values[0]);
+// 		setWorkflowValues(dataset.values[0]);
+// 		document.getElementById("erroReq").checked = false;
+// 	} else {
+// 		document.getElementById("erroReq").checked = true;
+// 	}
+// };
+
 const consultaAprovadores = async (filial, setor, fluxo) => {
     console.log(filial, setor, fluxo);
 
@@ -227,7 +240,7 @@ const consultaAprovadores = async (filial, setor, fluxo) => {
     var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
     var c2 = DatasetFactory.createConstraint("FLUXO", fluxo, fluxo, ConstraintType.MUST_NOT);
     var c3 = DatasetFactory.createConstraint("FILIAL", filial, filial, ConstraintType.SHOULD);
-    var constraints = [c1, c2, c3];
+    var constraints = new Array(c1, c2, c3);
 
     // Consulta o dataset
     var dataset = await DatasetFactory.getDataset("protheus_rest_zcc", null, constraints, null);
