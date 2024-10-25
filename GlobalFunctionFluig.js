@@ -34,14 +34,7 @@ const autocompleteEmpresas = (settings) => {
             $(config.codEmpVariavel).val(filial);
             console.log(config.fluxoAlcada);
             autocompleteSetores({ fluxoAlcada: config.fluxoAlcada });
-
             config.addConfigSelectEmpresa();
-            const setor = $(config.codSetorField).val()
-
-            if (config.fluxoAlcada != null && setor != null) {
-                limpaAlçadas();
-                consultaAprovadores(filial, setor, config.fluxoAlcada)
-            }
         },
         removeEmpresa: function (event) {  // Função padrão ao remover item
             $(config.codEmpVariavel).val("");
@@ -95,8 +88,6 @@ const autocompleteEmpresas = (settings) => {
         .on("fluig.autocomplete.itemRemoved", function (event) {
             config.removeEmpresa(event);
         });
-
-    return acEmpresas
 }
 
 const autocompleteSetores = (settings) => {
@@ -123,8 +114,6 @@ const autocompleteSetores = (settings) => {
             }
         }
     }, settings);
-
-
 
     // Definir campo como editável ou readonly conforme a configuração
     $(config.setorField).prop("readonly", false);
@@ -169,9 +158,8 @@ const autocompleteSetores = (settings) => {
 
     // Busca os setores usando o código do solicitante
     getSetores($(config.codigoSolicitante).val()).then((setores) => {
+        if (acSetores != null || acSetores != undefined) {acSetores.destroy();}
         if (setores.length > 1) {
-            if (acSetores != null || acSetores != undefined) acSetores.destroy();
-
             acSetores = FLUIGC.autocomplete(config.setorField, {
                 highlight: true,
                 minLength: 0,
@@ -206,31 +194,15 @@ const autocompleteSetores = (settings) => {
     });
 }
 
-// const consultaAprovadores = async (setor, filial) => {
-// 	var fluxo = "01";
-// 	//Monta as constraints para consulta
-// 	var c1 = DatasetFactory.createConstraint("SETOR", setor, setor, ConstraintType.MUST);
-// 	var c2 = DatasetFactory.createConstraint("FLUXO", fluxo, fluxo, ConstraintType.MUST_NOT);
-// 	var c3 = DatasetFactory.createConstraint("FILIAL", filial, filial, ConstraintType.SHOULD);
-// 	var constraints = new Array(c1, c2, c3);
-// 	var dataset = await DatasetFactory.getDataset("protheus_rest_zcc", null, constraints, null);
-
-// 	if (dataset.values.length > 0) {
-// 		// console.log(dataset.values[0]);
-// 		setWorkflowValues(dataset.values[0]);
-// 		document.getElementById("erroReq").checked = false;
-// 	} else {
-// 		document.getElementById("erroReq").checked = true;
-// 	}
-// };
-
 const consultaAprovadores = async (filial, setor, fluxo) => {
-    console.log(filial, setor, fluxo);
+
 
     // Certifica que os valores são strings
     filial = filial.toString();
     setor = setor.toString();
     fluxo = fluxo.toString();
+
+    console.log(filial, setor, fluxo);
 
     if (filial === null || setor === null || fluxo === null) {
         return;
@@ -246,7 +218,7 @@ const consultaAprovadores = async (filial, setor, fluxo) => {
     var dataset = await DatasetFactory.getDataset("protheus_rest_zcc", null, constraints, null);
 
     // Verifica se há resultados no dataset
-    if (dataset && dataset.values && dataset.values.length > 0) {
+    if (dataset.values.length > 0) {
         setWorkflowValues(dataset.values[0]);
         document.getElementById("erroReq").checked = false;
     } else {
