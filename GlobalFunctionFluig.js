@@ -126,18 +126,7 @@ const autocompleteSetores = (settings) => {
 	$(config.setorField).prop("readonly", false);
 
 	// Função para buscar correspondências
-	function substringMatcher(list, campo) {
-		return function findMatches(q, cb) {
-			var matches = [];
-			var substrRegex = new RegExp(q, "i");
-			$.each(list, function (i, item) {
-				if (substrRegex.test(item[campo])) {
-					matches.push(item);
-				}
-			});
-			cb(matches);
-		};
-	}
+
 
 	const getSetores = (codeUser) => {
 		// Função para buscar os setores do dataset
@@ -347,3 +336,16 @@ const autoComplete = (config) => {
 			onItemRemoved(event);
 		});
 };
+
+function substringMatcher(list, campo) {
+	return function findMatches(q, cb) {
+		var matches = [];
+		var substrRegex = new RegExp(q, "i");
+		$.each(list, function (i, item) {
+			if (substrRegex.test(item[campo])) {
+				matches.push(item);
+			}
+		});
+		cb(matches);
+	};
+}
