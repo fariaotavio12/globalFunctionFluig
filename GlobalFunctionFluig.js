@@ -301,6 +301,7 @@ const autoComplete = (config) => {
 		searchTimeout = 100, // Tempo de espera para busca
 		onItemAdded = () => {}, // Função ao adicionar um item
 		onItemRemoved = () => {}, // Função ao remover um item
+		templates = {},
 	} = config;
 
 	return FLUIGC.autocomplete(`#${elementId}`, {
@@ -328,6 +329,7 @@ const autoComplete = (config) => {
 			root: "content", // Altere se o JSON tiver uma estrutura diferente
 		},
 		tagMaxWidth: tagMaxWidth,
+		templates: templates
 	})
 		.on("fluig.autocomplete.itemAdded", (event) => {
 			onItemAdded(event);
@@ -335,6 +337,7 @@ const autoComplete = (config) => {
 		.on("fluig.autocomplete.itemRemoved", (event) => {
 			onItemRemoved(event);
 		});
+		
 };
 
 function substringMatcher(list, campo) {
