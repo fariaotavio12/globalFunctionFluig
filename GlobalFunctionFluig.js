@@ -302,6 +302,8 @@ const autoComplete = (config) => {
 		onItemAdded = () => {}, // Função ao adicionar um item
 		onItemRemoved = () => {}, // Função ao remover um item
 		templates = {},
+		patternKey = "searchValue",
+		root = "content"
 	} = config;
 
 	return FLUIGC.autocomplete(`#${elementId}`, {
@@ -324,9 +326,11 @@ const autoComplete = (config) => {
 		source: {
 			url: url,
 			limit: 10,
+			offset: 0,
+			offsetKey: "offset",
 			limitKey: "limit",
-			patternKey: "searchField",
-			root: "content", // Altere se o JSON tiver uma estrutura diferente
+			patternKey: patternKey,
+			root: root, // Altere se o JSON tiver uma estrutura diferente
 		},
 		tagMaxWidth: tagMaxWidth,
 		templates: templates
