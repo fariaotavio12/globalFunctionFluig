@@ -122,12 +122,7 @@ const autocompleteSetores = (settings) => {
 		settings
 	);
 
-	// Definir campo como editável ou readonly conforme a configuração
-	$(config.setorField).prop("readonly", false);
-
 	// Função para buscar correspondências
-
-
 	const getSetores = (codeUser) => {
 		// Função para buscar os setores do dataset
 		return $.ajax({
@@ -159,6 +154,9 @@ const autocompleteSetores = (settings) => {
 			acSetores.destroy();
 		}
 		if (setores.length > 1) {
+			// Definir campo como editável ou readonly conforme a configuração
+			$(config.setorField).prop("readonly", false);
+
 			acSetores = FLUIGC.autocomplete(config.setorField, {
 				highlight: true,
 				minLength: 0,
@@ -303,7 +301,7 @@ const autoComplete = (config) => {
 		onItemRemoved = () => {}, // Função ao remover um item
 		templates = {},
 		patternKey = "searchValue",
-		root = "content"
+		root = "content",
 	} = config;
 
 	return FLUIGC.autocomplete(`#${elementId}`, {
@@ -333,7 +331,7 @@ const autoComplete = (config) => {
 			root: root, // Altere se o JSON tiver uma estrutura diferente
 		},
 		tagMaxWidth: tagMaxWidth,
-		templates: templates
+		templates: templates,
 	})
 		.on("fluig.autocomplete.itemAdded", (event) => {
 			onItemAdded(event);
@@ -341,7 +339,6 @@ const autoComplete = (config) => {
 		.on("fluig.autocomplete.itemRemoved", (event) => {
 			onItemRemoved(event);
 		});
-		
 };
 
 function substringMatcher(list, campo) {
